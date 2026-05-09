@@ -14,10 +14,11 @@ const supabase = createClient(
 );
 
 /** Shared cookie options */
+const isProd = process.env.NODE_ENV === 'production';
 const cookieOpts = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax',
+  secure: isProd,
+  sameSite: isProd ? 'none' : 'lax', // Must be 'none' for cross-domain Vercel apps
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 };
 
