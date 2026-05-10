@@ -39,13 +39,19 @@ app.use(
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Get the allowed origin and strip any trailing slash
-      const allowed = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+      // Get the allowed origin from env and strip any trailing slash
+      const allowed = (process.env.FRONTEND_URL || '').replace(/\/$/, '');
       
+      if (!allowed) {
+        console.error('CRITICAL: FRONTEND_URL environment variable is not set!');
+        return callback(new Error('Server configuration error: FRONTEND_URL missing'));
+      }
+
       // Allow if no origin (like mobile/curl) or if it matches exactly (ignoring trailing slash)
       if (!origin || origin.replace(/\/$/, '') === allowed) {
         callback(null, true);
       } else {
+        console.warn('CORS blocked origin:', origin, 'Expected:', allowed);
         callback(new Error('Not allowed by CORS'));
       }
     },
