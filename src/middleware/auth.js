@@ -5,7 +5,13 @@ import jwt from 'jsonwebtoken';
  * Attaches decoded payload to req.user.
  */
 export const requireAuth = (req, res, next) => {
-  const token = req.cookies?.devpulse_token;
+  // Check cookie first, then Authorization header
+  let token = req.cookies?.devpulse_token;
+  
+  const authHeader = req.headers.authorization;
+  if (!token && authHeader?.startsWith('Bearer ')) {
+    token = authHeader.split(' ')[1];
+  }
 
   if (!token) {
     return res.status(401).json({ error: 'Authentication required.' });

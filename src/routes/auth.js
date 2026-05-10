@@ -92,7 +92,8 @@ router.get('/github/callback', authLimiter, async (req, res) => {
     );
 
     res.cookie('devpulse_token', token, cookieOpts);
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+    // Send token in URL as a fail-safe for cross-site cookie blocking
+    res.redirect(`${process.env.FRONTEND_URL}/dashboard?token=${token}`);
   } catch (err) {
     console.error('[AUTH] Callback error:', err.message);
     res.redirect(`${process.env.FRONTEND_URL}?error=auth_failed`);
