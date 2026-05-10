@@ -31,16 +31,27 @@ app.use(
       },
     },
     crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // Get the allowed origin and strip any trailing slash
+      const allowed = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(/\/$/, '');
+      
+      // Allow if no origin (like mobile/curl) or if it matches exactly (ignoring trailing slash)
+      if (!origin || origin.replace(/\/$/, '') === allowed) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
