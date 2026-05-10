@@ -15,6 +15,9 @@ import adminRoutes from './routes/admin.js';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Trust Vercel's reverse proxy so secure cookies are correctly set
+app.set('trust proxy', 1);
+
 // ── Security headers ──────────────────────────────────────────────────────────
 app.use(
   helmet({
